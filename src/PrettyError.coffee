@@ -2,7 +2,7 @@
 defaultStyle = require './defaultStyle'
 ParsedError = require './ParsedError'
 nodePaths = require './nodePaths'
-RenderKid = require 'renderkid'
+treeify = require 'treeify'
 
 instance = null
 
@@ -37,9 +37,9 @@ module.exports = class PrettyError
     @_filterCallbacks = []
     @_parsedErrorFilters = []
     @_aliases = []
-    @_renderer = new RenderKid
+    @_renderer = (obj) => treeify.asTree(obj, true, true)
     @_style = self._getDefaultStyle()
-    @_renderer.style @_style
+    # @_renderer.style @_style
 
   start: ->
     @_oldPrepareStackTrace = Error.prepareStackTrace
@@ -205,7 +205,7 @@ module.exports = class PrettyError
 
   appendStyle: (toAppend) ->
     object.appendOnto @_style, toAppend
-    @_renderer.style toAppend
+    # @_renderer.style toAppend
     @
 
   _getRenderer: ->
@@ -213,7 +213,7 @@ module.exports = class PrettyError
 
   render: (e, logIt = no, useColors = @_useColors) ->
     obj = @getObject e
-    rendered = @_renderer.render(obj, useColors)
+    rendered = @_renderer(obj, useColors)
     console.error rendered if logIt is yes
     rendered
 
